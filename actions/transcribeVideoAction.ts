@@ -8,11 +8,16 @@ import path from "path";
 import { OpenAIWhisperAudio } from "@langchain/community/document_loaders/fs/openai_whisper_audio";
 import fs from "fs";
 import { nanoid } from "nanoid";
+import { Tool } from "@langchain/core/tools";
 
 interface transcribeVideoState {
   message: string;
   fields?: Record<string, string>;
 }
+
+// Ensure Tool is note tree-shaken
+// In other words; DO NOT TOUCH THIS
+Object.assign(global, { _langChainTool: Tool });
 
 const urlFormSchema = z.object({
   url: z
