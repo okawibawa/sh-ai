@@ -7,7 +7,13 @@ import { z } from "zod";
 import { useFormState } from "react-dom";
 
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
 import { transcribeVideoAction } from "@/actions/transcribeVideoAction";
@@ -16,11 +22,17 @@ const urlFormSchema = z.object({
   url: z
     .string()
     .trim()
-    .regex(
-      /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=[\w-]{11}|youtu\.be\/[\w-]{11})(\?.*)?$/,
-      {
-        message: "Must be a valid URL (HTTPS).",
-      }
+    .url({ message: "Must be a valid URL." })
+    .refine((url) => url.startsWith("https://"), {
+      message: "URL must use HTTPS protocol.",
+    })
+    .refine(
+      (url) => {
+        const youtubeRegex =
+          /^(https:\/\/)?(www\.)?(youtube\.com\/watch\?v=[\w-]{11}|youtu\.be\/[\w-]{11})(\?.*)?$/;
+        return youtubeRegex.test(url);
+      },
+      { message: "Must be a valid YouTube URL." },
     ),
 });
 
@@ -29,9 +41,6 @@ export default function VideoTranscriber() {
   const [state, formAction] = useFormState(transcribeVideoAction, {
     message: "",
   });
-  const [result, setResult] = useState("");
-
-  console.log({ msg: state.message });
 
   const form = useForm<z.infer<typeof urlFormSchema>>({
     resolver: zodResolver(urlFormSchema),
@@ -39,8 +48,6 @@ export default function VideoTranscriber() {
       url: "",
     },
   });
-
-  console.log({ state });
 
   return (
     <>
@@ -59,8 +66,6 @@ export default function VideoTranscriber() {
                   formData.append("url", data.url);
 
                   await formAction(formData);
-
-                  setResult(state.message);
                 } catch (error) {
                   console.error("Form submission error: ", error);
                 }

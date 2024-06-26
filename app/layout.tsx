@@ -22,11 +22,21 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased flex flex-col items-center p-24",
+          "min-h-screen bg-background font-sans antialiased flex flex-col items-center p-24 justify-between",
           fontSans.variable,
         )}
       >
         {children}
+        <footer className="text-zinc-800">
+          <a
+            href="https://github.com/okawibawa/sh-ai"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm underline"
+          >
+            GitHub
+          </a>
+        </footer>
       </body>
     </html>
   );
