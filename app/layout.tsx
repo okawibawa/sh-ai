@@ -1,0 +1,33 @@
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import Link from "next/link";
+import "./globals.css";
+
+import { cn } from "@/lib/utils";
+
+const fontSans = Inter({ subsets: ["latin"], variable: "--font-sans" });
+
+export const metadata: Metadata = {
+  title: "Your powerful AI Super Helper | sh-ai",
+  description:
+    "Specifically made for you to not worry about small but mundane tasks.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased flex flex-col items-center p-24",
+          fontSans.variable,
+        )}
+      >
+        {children}
+      </body>
+    </html>
+  );
+}
