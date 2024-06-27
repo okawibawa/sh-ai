@@ -18,13 +18,23 @@ export const urlFormSchema = z.object({
     ),
 });
 
-export const sqlSchemaFileSchema = z.object({
+export const fileListFormSchema = z.object({
   file: z
-    .string()
-    .refine((value) => {
-      return value.length > 0;
-    }, "Please select a file")
-    .refine((value) => {
-      return value.endsWith(".sql");
-    }, "File must be an SQL schema file"),
+    .any()
+    .refine((files) => files instanceof FileList && files.length > 0, {
+      message: "File is required",
+    })
+    .refine(
+      (files) => files instanceof FileList && files.length > 0 && files[0]?.name.endsWith(".sql"),
+      { message: "Must be an SQL schema file." }
+    ),
+});
+
+export const fileFormSchema = z.object({
+  file: z
+    .any()
+    .refine((file) => file instanceof File, { message: "File is required." })
+    .refine((file) => file?.name?.endsWith(".sql"), {
+      message: "Must be an SQL schema file.",
+    }),
 });

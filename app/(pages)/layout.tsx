@@ -26,7 +26,7 @@ export default function PagesLayout({ children }: { children: ReactNode }) {
           </h1>
         </Link>
         <p className="text-xl">
-          Your powerful AI{" "}
+          Your Powerful AI{" "}
           <span
             className="font-semibold bg-gradient-to-r bg-clip-text text-transparent"
             style={{
