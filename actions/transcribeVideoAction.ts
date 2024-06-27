@@ -1,6 +1,5 @@
 "use server";
 
-import { z } from "zod";
 import ytdl from "ytdl-core";
 import ffmpeg from "fluent-ffmpeg";
 import { Readable } from "stream";
@@ -33,7 +32,7 @@ const CONTENT_TOO_LONG_ERRORS = [
 
 export const transcribeVideoAction = async (
   previousState: transcribeVideoState,
-  formData: FormData,
+  formData: FormData
 ): Promise<transcribeVideoState> => {
   const data = Object.fromEntries(formData);
   const uid = nanoid(4);
@@ -50,9 +49,7 @@ export const transcribeVideoAction = async (
   }
 
   try {
-    const downloadYouTubeAudio = async (
-      url: string,
-    ): Promise<Readable | transcribeVideoState> => {
+    const downloadYouTubeAudio = async (url: string): Promise<Readable | transcribeVideoState> => {
       try {
         const videoInfo = await ytdl.getInfo(url);
 
@@ -60,9 +57,7 @@ export const transcribeVideoAction = async (
           return {
             status: "error",
             message:
-              CONTENT_TOO_LONG_ERRORS[
-                Math.floor(Math.random() * CONTENT_TOO_LONG_ERRORS.length)
-              ],
+              CONTENT_TOO_LONG_ERRORS[Math.floor(Math.random() * CONTENT_TOO_LONG_ERRORS.length)],
           };
         }
 
@@ -83,7 +78,7 @@ export const transcribeVideoAction = async (
 
     const splitAndConvertWav = async (
       audioStream: Readable,
-      segmentDuration: number = 180,
+      segmentDuration: number = 180
     ): Promise<string[]> => {
       const outputDir = path.join(process.cwd(), "public", "audio");
       const outputPaths: string[] = [];
@@ -96,11 +91,7 @@ export const transcribeVideoAction = async (
 
       await new Promise<void>((resolve, reject) => {
         ffmpeg(audioStream)
-          .outputOptions([
-            `-f segment`,
-            `-segment_time ${segmentDuration}`,
-            `-reset_timestamps 1`,
-          ])
+          .outputOptions([`-f segment`, `-segment_time ${segmentDuration}`, `-reset_timestamps 1`])
           .output(path.join(outputDir, `segment_${uid}_%03d.wav`))
           .audioCodec("pcm_s16le")
           .audioChannels(1)
@@ -123,13 +114,9 @@ export const transcribeVideoAction = async (
         .readdirSync(outputDir)
         .filter(
           (segment) =>
-            segment.startsWith("segment") &&
-            segment.endsWith(".wav") &&
-            segment.includes(uid),
+            segment.startsWith("segment") && segment.endsWith(".wav") && segment.includes(uid)
         );
-      outputPaths.push(
-        ...segments.map((segment) => path.join(outputDir, segment)),
-      );
+      outputPaths.push(...segments.map((segment) => path.join(outputDir, segment)));
 
       return outputPaths;
     };
