@@ -8,8 +8,7 @@ const fontSans = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "Your powerful AI Super Helper | sh-ai",
-  description:
-    "Specifically made for you to not worry about small but mundane tasks.",
+  description: "Specifically made for you to not worry about small but mundane tasks.",
 };
 
 export default function RootLayout({
@@ -22,11 +21,11 @@ export default function RootLayout({
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased flex flex-col items-center p-24 justify-between",
-          fontSans.variable,
+          fontSans.variable
         )}
       >
         {children}
-        <footer className="text-zinc-800">
+        <footer className="text-zinc-800 mt-10">
           <a
             href="https://github.com/okawibawa/sh-ai"
             target="_blank"

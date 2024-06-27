@@ -18,7 +18,11 @@ export const urlFormSchema = z.object({
     ),
 });
 
-export const fileListFormSchema = z.object({
+export const queryGeneratorBaseSchema = z.object({
+  mode: z.enum(["insert", "query"]).default("insert"),
+});
+
+export const fileListFormSchema = queryGeneratorBaseSchema.extend({
   file: z
     .any()
     .refine((files) => files instanceof FileList && files.length > 0, {
@@ -30,11 +34,15 @@ export const fileListFormSchema = z.object({
     ),
 });
 
-export const fileFormSchema = z.object({
+export const fileFormSchema = queryGeneratorBaseSchema.extend({
   file: z
     .any()
     .refine((file) => file instanceof File, { message: "File is required." })
     .refine((file) => file?.name?.endsWith(".sql"), {
       message: "Must be an SQL schema file.",
     }),
+});
+
+export const queryFormSchema = queryGeneratorBaseSchema.extend({
+  query: z.string({ message: "Please insert a coherent query." }).trim(),
 });
