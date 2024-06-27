@@ -50,8 +50,8 @@ export default function VideoTranscriber() {
                   formData.append("url", data.url);
 
                   await formAction(formData);
-                } catch (error) {
-                  console.error("Form submission error: ", error);
+                } catch (error: any) {
+                  console.error("Form submission error: ", error.message);
                 }
               });
             })}
