@@ -18,8 +18,8 @@ export default function Home() {
             Transcribe Video
           </Link>
           <Link
-            href="#"
-            className={`${buttonVariants({ variant: "secondary" })} pointer-events-none opacity-60`}
+            href="/query-generator"
+            className={buttonVariants({ variant: "default" })}
           >
             Query Generator
           </Link>
