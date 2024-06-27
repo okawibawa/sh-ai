@@ -4,7 +4,6 @@ import { ReactNode, useCallback, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getPageNameByUrl } from "@/lib/utils";
-import { DefaultColors } from "tailwindcss/types/generated/colors";
 
 export default function PagesLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();

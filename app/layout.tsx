@@ -7,7 +7,11 @@ import { cn } from "@/lib/utils";
 const fontSans = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Your powerful AI Super Helper | sh-ai",
+  title: {
+    default: "Your powerful AI Super Helper | sh-ai",
+    template: "Your powerful AI %s | sh-ai",
+    absolute: "Your powerful AI Super Helper | sh-ai",
+  },
   description: "Specifically made for you to not worry about small but mundane tasks.",
 };
 
