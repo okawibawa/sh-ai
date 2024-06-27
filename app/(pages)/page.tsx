@@ -13,7 +13,7 @@ export default function Home() {
             Transcribe Video
           </Link>
           <Link href="/query-generator" className={buttonVariants({ variant: "default" })}>
-            Query Generator
+            SQL Query Generator
           </Link>
           <Link
             href="#"
