@@ -1,0 +1,36 @@
+name: build-and-deploy
+run-name: ${{ github.actor }} is building and deploying ${{ github.event.repository.name }}
+
+env:
+  DOCKER_IMAGE: sh-ai
+  DOCKER_CONTAINER: sh-ai
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  build:
+    runs-on: self-hosted
+    environment: development
+
+    name: build
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          docker build -t ${{env.DOCKER_IMAGE}}:development .
+
+  deploy:
+    runs-on: self-hosted
+    environment: development
+    needs: build
+
+    name: deploy
+    steps:
+      - uses: actions/checkout@v3
+      - run: docker container rm -f ${{ env.DOCKER_CONTAINER }} || true
+      - run: |
+          docker run -d -p 3000:3001 --name ${{ env.DOCKER_CONTAINER }} \
+          -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \ 
+          ${{ env.DOCKER_IMAGE }}:development
