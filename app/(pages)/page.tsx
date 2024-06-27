@@ -21,13 +21,13 @@ export default function Home() {
             href="#"
             className={`${buttonVariants({ variant: "secondary" })} pointer-events-none opacity-60`}
           >
-            Summarize Video
+            Query Generator
           </Link>
           <Link
             href="#"
             className={`${buttonVariants({ variant: "secondary" })} pointer-events-none opacity-60`}
           >
-            Text-to-Speech
+            Summarize Video
           </Link>
           <Link
             href="#"

@@ -10,32 +10,18 @@ import fs from "fs";
 import { nanoid } from "nanoid";
 import { Tool } from "@langchain/core/tools";
 
+import { urlFormSchema } from "@/dtos";
+
 interface transcribeVideoState {
   message: string;
   fields?: Record<string, string>;
+  status?: "success" | "error";
+  data?: any;
 }
 
 // Ensure Tool is note tree-shaken
 // In other words; DO NOT TOUCH THIS
 Object.assign(global, { _langChainTool: Tool });
-
-const urlFormSchema = z.object({
-  url: z
-    .string()
-    .trim()
-    .url({ message: "Must be a valid URL." })
-    .refine((url) => url.startsWith("https://"), {
-      message: "URL must use HTTPS protocol.",
-    })
-    .refine(
-      (url) => {
-        const youtubeRegex =
-          /^(https:\/\/)?(www\.)?(youtube\.com\/watch\?v=[\w-]{11}|youtu\.be\/[\w-]{11})(\?.*)?$/;
-        return youtubeRegex.test(url);
-      },
-      { message: "Must be a valid YouTube URL." },
-    ),
-});
 
 const CONTENT_TOO_LONG_ERRORS = [
   "Content is too long. I am not that powerful yet 😅 Less than 13 mins is preferable.",
@@ -64,8 +50,35 @@ export const transcribeVideoAction = async (
   }
 
   try {
-    const downloadYouTubeAudio = async (url: string): Promise<Readable> => {
-      return ytdl(url, { filter: "audioonly" });
+    const downloadYouTubeAudio = async (
+      url: string,
+    ): Promise<Readable | transcribeVideoState> => {
+      try {
+        const videoInfo = await ytdl.getInfo(url);
+
+        if (parseInt(videoInfo.videoDetails.lengthSeconds) > 780) {
+          return {
+            status: "error",
+            message:
+              CONTENT_TOO_LONG_ERRORS[
+                Math.floor(Math.random() * CONTENT_TOO_LONG_ERRORS.length)
+              ],
+          };
+        }
+
+        const stream = ytdl(url, { filter: "audioonly" });
+
+        return {
+          status: "success",
+          message: "Streaming data success.",
+          data: stream,
+        };
+      } catch (error) {
+        return {
+          status: "error",
+          message: error instanceof Error ? error.message : String(error),
+        };
+      }
     };
 
     const splitAndConvertWav = async (
@@ -134,18 +147,19 @@ export const transcribeVideoAction = async (
     };
 
     const videoBuffer = await downloadYouTubeAudio(parseData.data.url);
-    const segmentPaths = await splitAndConvertWav(videoBuffer);
 
-    let fullTranscription = "";
-
-    if (segmentPaths.length > 4) {
+    if ((videoBuffer as transcribeVideoState).status === "error") {
       return {
-        message:
-          CONTENT_TOO_LONG_ERRORS[
-            Math.floor(Math.random() * CONTENT_TOO_LONG_ERRORS.length)
-          ],
+        status: (videoBuffer as transcribeVideoState).status,
+        message: (videoBuffer as transcribeVideoState).message,
       };
     }
+
+    console.log({ videoBuffer });
+
+    const segmentPaths = await splitAndConvertWav(videoBuffer as Readable);
+
+    let fullTranscription = "";
 
     for (const segmentPath of segmentPaths) {
       const segmentTranscription = await transcribeAudio(segmentPath);

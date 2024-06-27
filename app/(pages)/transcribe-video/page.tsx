@@ -16,25 +16,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { transcribeVideoAction } from "@/actions/transcribeVideoAction";
+import { transcribeVideoAction } from "@/actions";
 
-const urlFormSchema = z.object({
-  url: z
-    .string()
-    .trim()
-    .url({ message: "Must be a valid URL." })
-    .refine((url) => url.startsWith("https://"), {
-      message: "URL must use HTTPS protocol.",
-    })
-    .refine(
-      (url) => {
-        const youtubeRegex =
-          /^(https:\/\/)?(www\.)?(youtube\.com\/watch\?v=[\w-]{11}|youtu\.be\/[\w-]{11})(\?.*)?$/;
-        return youtubeRegex.test(url);
-      },
-      { message: "Must be a valid YouTube URL." },
-    ),
-});
+import { urlFormSchema } from "@/dtos";
 
 export default function VideoTranscriber() {
   const [isPending, startTransition] = useTransition();
@@ -66,8 +50,8 @@ export default function VideoTranscriber() {
                   formData.append("url", data.url);
 
                   await formAction(formData);
-                } catch (error) {
-                  console.error("Form submission error: ", error);
+                } catch (error: any) {
+                  console.error("Form submission error: ", error.message);
                 }
               });
             })}
