@@ -44,5 +44,8 @@ export const fileFormSchema = queryGeneratorBaseSchema.extend({
 });
 
 export const queryFormSchema = queryGeneratorBaseSchema.extend({
-  query: z.string({ message: "Please insert a coherent query." }).trim(),
+  query: z
+    .string({ message: "Please insert a coherent query." })
+    .trim()
+    .min(1, { message: "Please insert your query." }),
 });

@@ -25,7 +25,7 @@ export default function RootLayout({
         )}
       >
         {children}
-        <footer className="text-zinc-800 mt-10">
+        <footer className="text-zinc-800 mt-10 text-center space-y-2">
           <a
             href="https://github.com/okawibawa/sh-ai"
             target="_blank"
@@ -34,6 +34,17 @@ export default function RootLayout({
           >
             GitHub
           </a>
+          <p className="text-sm">
+            &copy; 2024 |{" "}
+            <a
+              href="https://www.okawibawa.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              Oka Wibawa
+            </a>
+          </p>
         </footer>
       </body>
     </html>
