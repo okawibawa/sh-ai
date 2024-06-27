@@ -6,22 +6,14 @@ export default function Home() {
   return (
     <>
       <section className="space-y-2">
-        <p>
-          Proceed with any one of these and see how far the rabbit hole goes.
-        </p>
+        <p>You shall proceed.</p>
 
         <div className="grid grid-cols-2 gap-2">
-          <Link
-            href="/transcribe-video"
-            className={buttonVariants({ variant: "default" })}
-          >
+          <Link href="/transcribe-video" className={buttonVariants({ variant: "default" })}>
             Transcribe Video
           </Link>
-          <Link
-            href="#"
-            className={`${buttonVariants({ variant: "secondary" })} pointer-events-none opacity-60`}
-          >
-            Query Generator
+          <Link href="/query-generator" className={buttonVariants({ variant: "default" })}>
+            SQL Query Generator
           </Link>
           <Link
             href="#"

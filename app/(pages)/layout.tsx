@@ -10,17 +10,23 @@ export default function PagesLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   const gradientGenerator = useCallback(() => {
-    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+    const hue = Math.floor(Math.random() * 360);
+    const saturation = Math.floor(Math.random() * 40) + 60; // 60-100%
+    const lightness = Math.floor(Math.random() * 40) + 30; // 30-70%
+
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
   }, [pathname]);
 
   return (
     <main className="text-center space-y-6 max-w-[600px] w-full">
-      <section>
+      <section className="mb-12">
         <Link href="/" className="inline-block">
-          <h1 className="text-4xl font-bold">sh-ai</h1>
+          <h1 className="text-4xl font-bold">
+            sh-ai <span className="text-sm font-medium">alpha.</span>
+          </h1>
         </Link>
         <p className="text-xl">
-          Your powerful AI{" "}
+          Your Powerful AI{" "}
           <span
             className="font-semibold bg-gradient-to-r bg-clip-text text-transparent"
             style={{
