@@ -19,23 +19,7 @@ interface transcribeVideoState {
 // In other words; DO NOT TOUCH THIS
 Object.assign(global, { _langChainTool: Tool });
 
-const urlFormSchema = z.object({
-  url: z
-    .string()
-    .trim()
-    .url({ message: "Must be a valid URL." })
-    .refine((url) => url.startsWith("https://"), {
-      message: "URL must use HTTPS protocol.",
-    })
-    .refine(
-      (url) => {
-        const youtubeRegex =
-          /^(https:\/\/)?(www\.)?(youtube\.com\/watch\?v=[\w-]{11}|youtu\.be\/[\w-]{11})(\?.*)?$/;
-        return youtubeRegex.test(url);
-      },
-      { message: "Must be a valid YouTube URL." },
-    ),
-});
+import { urlFormSchema } from "@/dtos";
 
 const CONTENT_TOO_LONG_ERRORS = [
   "Content is too long. I am not that powerful yet 😅 Less than 13 mins is preferable.",
