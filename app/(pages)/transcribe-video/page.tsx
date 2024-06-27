@@ -1,10 +1,10 @@
 "use client";
 
+import { useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useFormState } from "react-dom";
-import { useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,19 +16,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { transcribeVideoAction } from "@/actions/transcribeVideoAction";
+import { transcribeVideoAction } from "@/actions";
 
-const urlFormSchema = z.object({
-  url: z
-    .string()
-    .trim()
-    .regex(
-      /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=[\w-]{11}|youtu\.be\/[\w-]{11})(\?.*)?$/,
-      {
-        message: "Must be a valid URL (HTTPS).",
-      },
-    ),
-});
+import { urlFormSchema } from "@/dtos";
 
 export default function VideoTranscriber() {
   const [isPending, startTransition] = useTransition();
@@ -44,44 +34,57 @@ export default function VideoTranscriber() {
   });
 
   return (
-    <div className="space-y-2">
-      <p className="text-sm">Paste YouTube URL here.</p>
+    <>
+      <section className="space-y-2">
+        <p className="text-sm">Paste YouTube URL here.</p>
 
-      <Form {...form}>
-        <form
-          className="flex gap-2 text-left"
-          action={formAction}
-          onSubmit={form.handleSubmit((data) => {
-            console.log({ data });
+        <Form {...form}>
+          <form
+            className="flex gap-2 text-left"
+            action={formAction}
+            onSubmit={form.handleSubmit((data) => {
+              startTransition(async () => {
+                try {
+                  const formData = new FormData();
 
-            startTransition(async () => {
-              try {
-                const formData = new FormData();
+                  formData.append("url", data.url);
 
-                formData.append("url", data.url);
+                  await formAction(formData);
+                } catch (error: any) {
+                  console.error("Form submission error: ", error.message);
+                }
+              });
+            })}
+          >
+            <FormField
+              control={form.control}
+              name="url"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormControl>
+                    <Input
+                      placeholder="e.g. https://youtu.be/..."
+                      {...field}
+                      disabled={isPending}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" disabled={isPending}>
+              Search
+            </Button>
+          </form>
+        </Form>
+      </section>
 
-                await formAction(formData);
-              } catch (error) {
-                console.error("Form submission error: ", error);
-              }
-            });
-          })}
-        >
-          <FormField
-            control={form.control}
-            name="url"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormControl>
-                  <Input placeholder="e.g. https://youtu.be/..." {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">Search</Button>
-        </form>
-      </Form>
-    </div>
+      {state.message && (
+        <section className="space-y-2">
+          <h2 className="font-semibold">Transcription</h2>
+          <p>{state.message}</p>
+        </section>
+      )}
+    </>
   );
 }
