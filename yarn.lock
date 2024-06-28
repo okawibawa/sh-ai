@@ -169,9 +169,9 @@
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
 "@langchain/community@^0.2.14":
-  version "0.2.14"
-  resolved "https://registry.yarnpkg.com/@langchain/community/-/community-0.2.14.tgz#90b3a9702cb2fe17865f59d3b00efdcee0ef4668"
-  integrity sha512-AhSgqCo3/HFGPTqPmJd9+KWY07SL+joj0kXFdB5VZ/0VGv6r+83yIj+IwQusF2G+wza6Nb+nqpto/HLWSwGd8g==
+  version "0.2.15"
+  resolved "https://registry.yarnpkg.com/@langchain/community/-/community-0.2.15.tgz#91ad5af44bfc72e83f6b6bd58cf5b29e53effed6"
+  integrity sha512-WOsNQGhriXh5tqRWfX3nthWO6RoVtM5kceX2GbJhqk09KV4R+1QmrOyph3OrpmjRA/YuSf0a+94LHY+c/QGolw==
   dependencies:
     "@langchain/core" "~0.2.9"
     "@langchain/openai" "~0.1.0"
@@ -185,7 +185,7 @@
     zod "^3.22.3"
     zod-to-json-schema "^3.22.5"
 
-"@langchain/core@0.2.10", "@langchain/core@>0.1.56 <0.3.0", "@langchain/core@>0.2.0 <0.3.0", "@langchain/core@>=0.2.5 <0.3.0", "@langchain/core@>=0.2.8 <0.3.0", "@langchain/core@^0.2.10", "@langchain/core@~0.2.0", "@langchain/core@~0.2.9":
+"@langchain/core@0.2.10", "@langchain/core@>0.1.56 <0.3.0", "@langchain/core@>0.2.0 <0.3.0", "@langchain/core@>=0.2.5 <0.3.0", "@langchain/core@>=0.2.8 <0.3.0", "@langchain/core@>=0.2.9 <0.3.0", "@langchain/core@^0.2.10", "@langchain/core@~0.2.0", "@langchain/core@~0.2.9":
   version "0.2.10"
   resolved "https://registry.yarnpkg.com/@langchain/core/-/core-0.2.10.tgz#23899ac977e94f27c1dfb8d5fa2e8707be6c7532"
   integrity sha512-M0WIaz7cdC5ilyfjAmxuJl88QP2i1EIPozjstkVNuOvA4gb16sfkhitQ2sGRDQwPsAL3+O1nLjAWYyrR9r1AIg==
@@ -204,9 +204,9 @@
     zod-to-json-schema "^3.22.3"
 
 "@langchain/openai@>=0.1.0 <0.3.0", "@langchain/openai@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@langchain/openai/-/openai-0.2.0.tgz#342e49d15b946fa01128d1bb81357e688e7cf567"
-  integrity sha512-gZd+0IOxpiKuh1m6KTT5vtUoOO72GEYyoU4+c6qAUucOEqQS0Vvz3lMGyNWLjK4x4Xpd+r8GAF5mj/jvghwP1A==
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@langchain/openai/-/openai-0.2.1.tgz#2c0c2cb6bd7839d8ce342c97099c6e35f2dde40d"
+  integrity sha512-Ti3C6ZIUPaueIPAfMljMnLu3GSGNq5KmrlHeWkIbrLShOBlzj4xj7mRfR73oWgAC0qivfxdkfbB0e+WCY+oRJw==
   dependencies:
     "@langchain/core" ">=0.2.8 <0.3.0"
     js-tiktoken "^1.0.12"
@@ -815,9 +815,9 @@ camelcase@6:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001579:
-  version "1.0.30001637"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001637.tgz#d9fab531493d9ef46a8ff305e9812190ac463f21"
-  integrity sha512-1x0qRI1mD1o9e+7mBI7XtzFAP4XszbHaVWsMiGbSPLYekKTJF7K+FNk6AsXH4sUpc+qrsI3pVgf1Jdl/uGkuSQ==
+  version "1.0.30001638"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001638.tgz#598e1f0c2ac36f37ebc3f5b8887a32ca558e5d56"
+  integrity sha512-5SuJUJ7cZnhPpeLHaH0c/HPAnAHZvS6ElWyHK9GSIbVOQABLzowiI2pjmpvZ1WEbkyz46iFd4UXlOHR5SqgfMQ==
 
 chalk@^4.0.0:
   version "4.1.2"
@@ -2204,11 +2204,11 @@ langchain@0.2.3:
     zod-to-json-schema "^3.22.3"
 
 langchain@^0.2.7:
-  version "0.2.7"
-  resolved "https://registry.yarnpkg.com/langchain/-/langchain-0.2.7.tgz#3554beda9f136385a6cd6c3bca7566ddaaa951ca"
-  integrity sha512-VtEcl1xBiebsbnXJMOqlK+H7IvD7EK/UUk6k2HG77mtqTViiv1AR5T/ivHlUrL1ATKitMHz24mAYJKMHeNrzYA==
+  version "0.2.8"
+  resolved "https://registry.yarnpkg.com/langchain/-/langchain-0.2.8.tgz#9bd77f5c12071d0ccb637c04fc33415e5369e5aa"
+  integrity sha512-kb2IOMA71xH8e6EXFg0l4S+QSMC/c796pj1+7mPBkR91HHwoyHZhFRrBaZv4tV+Td+Ba91J2uEDBmySklZLpNQ==
   dependencies:
-    "@langchain/core" "~0.2.0"
+    "@langchain/core" ">=0.2.9 <0.3.0"
     "@langchain/openai" ">=0.1.0 <0.3.0"
     "@langchain/textsplitters" "~0.0.0"
     binary-extensions "^2.2.0"
@@ -2310,9 +2310,9 @@ lowlight@^1.17.0:
     highlight.js "~10.7.0"
 
 lru-cache@^10.2.0:
-  version "10.2.2"
-  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-10.2.2.tgz#48206bc114c1252940c41b25b41af5b545aca878"
-  integrity sha512-9hp3Vp2/hFQUiIwKo8XCeFVnrg8Pk3TYNPIR7tJADKi5YfcF7vEaK7avFHTlSy3kOKYaJQaalfEo6YuXdceBOQ==
+  version "10.3.0"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-10.3.0.tgz#4a4aaf10c84658ab70f79a85a9a3f1e1fb11196b"
+  integrity sha512-CQl19J/g+Hbjbv4Y3mFNNXFEL/5t/KCg8POCuUqd4rMKjGG+j1ybER83hxV58zL+dFI1PTkt3GNFSHRt+d8qEQ==
 
 lucide-react@^0.396.0:
   version "0.396.0"

@@ -49,7 +49,7 @@ export const transcribeVideoAction = async (
   }
 
   try {
-    const downloadYouTubeAudio = async (url: string): Promise<Readable | transcribeVideoState> => {
+    const downloadYouTubeAudio = async (url: string): Promise<transcribeVideoState> => {
       try {
         const videoInfo = await ytdl.getInfo(url);
 
@@ -77,11 +77,12 @@ export const transcribeVideoAction = async (
     };
 
     const splitAndConvertWav = async (
-      audioStream: Readable,
+      audioStream: transcribeVideoState,
       segmentDuration: number = 180
     ): Promise<string[]> => {
-      const outputDir = path.join(process.cwd(), "app", "public", "audio");
+      const outputDir = path.join(process.cwd(), "public", "audio");
       const outputPaths: string[] = [];
+      const stream = audioStream.data as Readable;
 
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, {
@@ -89,12 +90,10 @@ export const transcribeVideoAction = async (
         });
       }
 
-      console.log({ audioStream });
-
       await new Promise<void>((resolve, reject) => {
-        ffmpeg(audioStream)
+        ffmpeg(stream)
           .outputOptions([`-f segment`, `-segment_time ${segmentDuration}`, `-reset_timestamps 1`])
-          .output(path.join(outputDir, `segment_${uid}_%03d.wav`))
+          .output(`${outputDir}/segment_${uid}_%03d.wav`)
           .audioCodec("pcm_s16le")
           .audioChannels(1)
           .audioFrequency(16000)
@@ -144,9 +143,7 @@ export const transcribeVideoAction = async (
       };
     }
 
-    console.log({ videoBuffer });
-
-    const segmentPaths = await splitAndConvertWav(videoBuffer as Readable);
+    const segmentPaths = await splitAndConvertWav(videoBuffer);
 
     let fullTranscription = "";
 
