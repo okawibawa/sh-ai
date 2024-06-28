@@ -80,7 +80,7 @@ export const transcribeVideoAction = async (
       audioStream: Readable,
       segmentDuration: number = 180
     ): Promise<string[]> => {
-      const outputDir = path.join(process.cwd(), "..", "public", "audio");
+      const outputDir = path.join(process.cwd(), "app", "public", "audio");
       const outputPaths: string[] = [];
 
       if (!fs.existsSync(outputDir)) {
@@ -88,6 +88,8 @@ export const transcribeVideoAction = async (
           recursive: true,
         });
       }
+
+      console.log({ audioStream });
 
       await new Promise<void>((resolve, reject) => {
         ffmpeg(audioStream)
