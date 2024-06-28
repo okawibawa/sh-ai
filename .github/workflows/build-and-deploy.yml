@@ -32,5 +32,5 @@ jobs:
       - run: docker container rm -f ${{ env.DOCKER_CONTAINER }} || true
       - run: |
           docker run -d -p 3001:3000 --name ${{ env.DOCKER_CONTAINER }} \
-          -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \ 
+          -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
           ${{ env.DOCKER_IMAGE }}:development
