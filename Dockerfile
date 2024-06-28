@@ -10,6 +10,8 @@ RUN yarn install --frozen-lockfile
 
 COPY . .
 
+RUN mkdir -p /app/public/audio && chmod 777 /app/public/audio
+
 RUN yarn build
 
 EXPOSE 3000
