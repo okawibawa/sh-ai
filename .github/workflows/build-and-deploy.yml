@@ -31,6 +31,6 @@ jobs:
       - uses: actions/checkout@v3
       - run: docker container rm -f ${{ env.DOCKER_CONTAINER }} || true
       - run: |
-          docker run -d -p 3000:3001 --name ${{ env.DOCKER_CONTAINER }} \
-          -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \ 
+          docker run -d -p 3001:3000 --name ${{ env.DOCKER_CONTAINER }} \
+          -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
           ${{ env.DOCKER_IMAGE }}:development
