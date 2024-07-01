@@ -123,8 +123,6 @@ export default function QueryGenerator() {
               className="text-left flex gap-2"
               action={formAction}
               onSubmit={queryForm.handleSubmit((data) => {
-                console.log({ data });
-
                 startTransition(async () => {
                   try {
                     const formData = new FormData();

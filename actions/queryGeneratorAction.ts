@@ -10,6 +10,7 @@ import { getCookie, setCookie } from "cookies-next";
 import { cookies } from "next/headers";
 
 import { fileFormSchema } from "@/dtos";
+import { split } from "postcss/lib/list";
 
 interface queryGeneratorState {
   message: string;
@@ -43,16 +44,18 @@ export const queryGeneratorAction = async (
 
       const splitCharacter = async (content: string) => {
         const splitter = new RecursiveCharacterTextSplitter({
-          chunkSize: 2500,
-          chunkOverlap: 300,
+          chunkSize: 2000,
+          chunkOverlap: 500,
         });
 
         return await splitter.createDocuments([content]);
       };
 
-      const document = await splitCharacter(schema);
+      const documents = await splitCharacter(schema);
 
-      cookies().set("document", JSON.stringify(document));
+      documents.forEach((document, index) => {
+        cookies().set(`document-${index}`, JSON.stringify(document));
+      });
 
       return {
         status: "success",
@@ -63,13 +66,20 @@ export const queryGeneratorAction = async (
 
     if (mode === "query") {
       const query = data.query as string;
-      const document = cookies().get("document");
+      const documentsCookies = cookies().getAll();
+      const documents = documentsCookies.filter((document) =>
+        document.name.startsWith("document-")
+      );
 
-      if (!document) {
-        return { status: "error", message: "An internal problem occurred." };
+      if (documents.length === 0) {
+        return {
+          status: "error",
+          message:
+            "We are having technical issues processing your schema. Please re-submit your schema or try again later.",
+        };
       }
 
-      const parsedDocument = JSON.parse(document?.value);
+      const parsedDocuments = documents.map((document) => JSON.parse(document.value));
 
       const promptTemplate = ChatPromptTemplate.fromMessages([
         ["system", "You are an excellent database admin."],
@@ -77,6 +87,10 @@ export const queryGeneratorAction = async (
         [
           "system",
           "Please pay attention to details of the schema; the relations, the columns name, data type, etc.",
+        ],
+        [
+          "system",
+          "Please also read the comments in the schema, if any, and use it to understand the schema better.",
         ],
         ["system", "Always adjust your answer with the user's request, and the schema details."],
         ["system", "You are going to answer people who ask about database query."],
@@ -103,7 +117,7 @@ export const queryGeneratorAction = async (
       const chain = RunnableSequence.from([
         {
           schema: async () =>
-            parsedDocument
+            parsedDocuments
               .map((document: { pageContent: string }) => document.pageContent)
               .join("\n"),
           question: new RunnablePassthrough(),
