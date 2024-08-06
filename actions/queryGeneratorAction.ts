@@ -10,14 +10,15 @@ import {
 } from "@langchain/core/runnables";
 import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
 import { createClient } from "@supabase/supabase-js";
+import { headers } from "next/headers";
 
 import { fileFormSchema } from "@/dtos";
 
 interface queryGeneratorState {
   message: string;
-  status?: "success" | "error" | "";
-  data?: any;
-  mode?: "insert" | "query" | "";
+  status: "success" | "error" | "";
+  data: any;
+  mode: "insert" | "query" | "";
 }
 
 const supabase = createClient(
@@ -34,6 +35,18 @@ export const queryGeneratorAction = async (
   previousState: queryGeneratorState,
   formData: FormData,
 ): Promise<queryGeneratorState> => {
+  const headersList = headers();
+  const rateLimitExceeded = headersList.get("X-RateLimit-Exceeded");
+
+  if (rateLimitExceeded === "true") {
+    return {
+      message: "Rate limit exceeded. Please try again later.",
+      status: "error",
+      data: null,
+      mode: "",
+    };
+  }
+
   const data = Object.fromEntries(formData);
   const mode = data.mode as "insert" | "query";
 
@@ -47,7 +60,12 @@ export const queryGeneratorAction = async (
 
     if (mode === "insert") {
       if (!parseData.success) {
-        return { message: "Validation error." };
+        return {
+          message: "Validation error.",
+          status: "error",
+          data: null,
+          mode: "insert",
+        };
       }
 
       const fileContent = (await parseData.data.file) as File;
@@ -71,9 +89,10 @@ export const queryGeneratorAction = async (
       });
 
       return {
-        status: "success",
-        mode: "insert",
         message: "Schema read successfully!",
+        status: "success",
+        data: null,
+        mode: "insert",
       };
     }
 
@@ -92,7 +111,12 @@ export const queryGeneratorAction = async (
       );
 
       if (relevantDocuments.length === 0) {
-        return { status: "error", message: "No relevant documents found." };
+        return {
+          message: "No relevant documents found.",
+          status: "error",
+          data: null,
+          mode: "query",
+        };
       }
 
       const context = relevantDocuments
@@ -151,15 +175,21 @@ export const queryGeneratorAction = async (
       const result = await chain.invoke(query);
 
       return {
-        status: "success",
-        mode: "query",
         message: "Query incoming...",
+        status: "success",
         data: result,
+        mode: "query",
       };
     }
 
-    return { status: "error", message: "Invalid mode." };
+    return { message: "Invalid mode.", status: "error", data: null, mode: "" };
   } catch (error) {
-    throw error;
+    console.error("Error in queryGeneratorAction:", error);
+    return {
+      message: "An unexpected error occurred. Please try again.",
+      status: "error",
+      mode: "",
+      data: null,
+    };
   }
 };

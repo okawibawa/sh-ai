@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 
 import { buttonVariants } from "@/components/ui/button";
 
@@ -6,13 +7,17 @@ export default function Home() {
   return (
     <>
       <section className="space-y-2">
-        <p>You shall proceed.</p>
-
         <div className="grid grid-cols-2 gap-2">
-          <Link href="/transcribe-video" className={buttonVariants({ variant: "default" })}>
+          <Link
+            href="/transcribe-video"
+            className={`${buttonVariants({ variant: "default" })}`}
+          >
             Transcribe Video
           </Link>
-          <Link href="/query-generator" className={buttonVariants({ variant: "default" })}>
+          <Link
+            href="/query-generator"
+            className={`${buttonVariants({ variant: "default" })}`}
+          >
             SQL Query Generator
           </Link>
           <Link

@@ -27,6 +27,8 @@ export default function QueryGenerator() {
   const [state, formAction] = useFormState(queryGeneratorAction, {
     message: "",
     mode: "",
+    status: "",
+    data: "",
   });
 
   const fileForm = useForm<z.infer<typeof fileListFormSchema>>({
@@ -41,19 +43,25 @@ export default function QueryGenerator() {
     if (state.message && state.mode === "insert") {
       if (state.status === "success") setIsSchemaRead(true);
     }
-  }, [setIsSchemaRead, state.status, state.message, state.mode]);
+  }, [setIsSchemaRead, state]);
 
   const handleRemoveSchema = () => {
     fileForm.reset();
     queryForm.reset();
-    state.data = "";
     state.status = "";
     state.data = "";
     state.mode = "";
+    state.message = "";
     setIsSchemaRead(false);
   };
 
   useEffect(() => {
+    if (
+      state.status === "error" &&
+      state.message === "Rate limit exceeded. Please try again later."
+    )
+      return;
+
     mode();
   }, [state, mode]);
 
@@ -171,7 +179,14 @@ export default function QueryGenerator() {
         </section>
       )}
 
-      {state.message && (
+      {state.status === "error" && (
+        <section className="space-y-2">
+          <h2 className="font-semibold">Error</h2>
+          <p className="text-red-500">{state.message}</p>
+        </section>
+      )}
+
+      {state.status === "success" && (
         <>
           {state.mode === "insert" && (
             <section className="space-y-2">
