@@ -18,7 +18,7 @@ interface transcribeVideoState {
   data?: any;
 }
 
-// Ensure Tool is note tree-shaken
+// Ensure Tool is not tree-shaken
 // In other words; DO NOT TOUCH THIS
 Object.assign(global, { _langChainTool: Tool });
 
@@ -26,13 +26,13 @@ const CONTENT_TOO_LONG_ERRORS = [
   "Content is too long. I am not that powerful yet 😅 Less than 13 mins is preferable.",
   "Your content is way too long. What are you transcribing? Less than 13 mins is preferable.",
   "Alright calm down now. Whatever that is you put in is too long. Less than 13 mins is preferable.",
-  "Your content is too long I'm not reading all that. Less than 13 mins is preferable.",
+  "Your content is too long I'm not transcribing all that. Less than 13 mins is preferable.",
   "Your content is too long I'm tired. Less than 13 mins is preferable.",
 ];
 
 export const transcribeVideoAction = async (
   previousState: transcribeVideoState,
-  formData: FormData
+  formData: FormData,
 ): Promise<transcribeVideoState> => {
   const data = Object.fromEntries(formData);
   const uid = nanoid(4);
@@ -49,7 +49,9 @@ export const transcribeVideoAction = async (
   }
 
   try {
-    const downloadYouTubeAudio = async (url: string): Promise<transcribeVideoState> => {
+    const downloadYouTubeAudio = async (
+      url: string,
+    ): Promise<transcribeVideoState> => {
       try {
         const videoInfo = await ytdl.getInfo(url);
 
@@ -57,7 +59,9 @@ export const transcribeVideoAction = async (
           return {
             status: "error",
             message:
-              CONTENT_TOO_LONG_ERRORS[Math.floor(Math.random() * CONTENT_TOO_LONG_ERRORS.length)],
+              CONTENT_TOO_LONG_ERRORS[
+                Math.floor(Math.random() * CONTENT_TOO_LONG_ERRORS.length)
+              ],
           };
         }
 
@@ -78,7 +82,7 @@ export const transcribeVideoAction = async (
 
     const splitAndConvertWav = async (
       audioStream: transcribeVideoState,
-      segmentDuration: number = 180
+      segmentDuration: number = 180,
     ): Promise<string[]> => {
       const outputDir = path.join(process.cwd(), "public", "audio");
       const outputPaths: string[] = [];
@@ -92,7 +96,11 @@ export const transcribeVideoAction = async (
 
       await new Promise<void>((resolve, reject) => {
         ffmpeg(stream)
-          .outputOptions([`-f segment`, `-segment_time ${segmentDuration}`, `-reset_timestamps 1`])
+          .outputOptions([
+            `-f segment`,
+            `-segment_time ${segmentDuration}`,
+            `-reset_timestamps 1`,
+          ])
           .output(`${outputDir}/segment_${uid}_%03d.wav`)
           .audioCodec("pcm_s16le")
           .audioChannels(1)
@@ -101,7 +109,7 @@ export const transcribeVideoAction = async (
             console.error("An error occurred while splitting: ", err);
             reject(err);
           })
-          .on("progress", (progress) => {
+          .on("progress", () => {
             console.log(`Processing.`);
           })
           .on("end", () => {
@@ -115,9 +123,13 @@ export const transcribeVideoAction = async (
         .readdirSync(outputDir)
         .filter(
           (segment) =>
-            segment.startsWith("segment") && segment.endsWith(".wav") && segment.includes(uid)
+            segment.startsWith("segment") &&
+            segment.endsWith(".wav") &&
+            segment.includes(uid),
         );
-      outputPaths.push(...segments.map((segment) => path.join(outputDir, segment)));
+      outputPaths.push(
+        ...segments.map((segment) => path.join(outputDir, segment)),
+      );
 
       return outputPaths;
     };
