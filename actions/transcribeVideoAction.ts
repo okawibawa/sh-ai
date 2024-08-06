@@ -1,13 +1,13 @@
 "use server";
 
-import ytdl from "ytdl-core";
+import ytdl from "@distube/ytdl-core";
 import ffmpeg from "fluent-ffmpeg";
 import { Readable } from "stream";
 import path from "path";
-import { OpenAIWhisperAudio } from "@langchain/community/document_loaders/fs/openai_whisper_audio";
 import fs from "fs";
 import { nanoid } from "nanoid";
 import { Tool } from "@langchain/core/tools";
+import { OpenAI } from "openai";
 
 import { urlFormSchema } from "@/dtos";
 import { headers } from "next/headers";
@@ -30,6 +30,10 @@ const CONTENT_TOO_LONG_ERRORS = [
   "Your content is too long I'm not transcribing all that. Less than 13 mins is preferable.",
   "Your content is too long I'm tired. Less than 13 mins is preferable.",
 ];
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export const transcribeVideoAction = async (
   previousState: transcribeVideoState,
@@ -113,10 +117,10 @@ export const transcribeVideoAction = async (
             `-segment_time ${segmentDuration}`,
             `-reset_timestamps 1`,
           ])
-          .output(`${outputDir}/segment_${uid}_%03d.wav`)
           .audioCodec("pcm_s16le")
           .audioChannels(1)
           .audioFrequency(16000)
+          .output(`${outputDir}/segment_${uid}_%03d.wav`)
           .on("error", (err) => {
             console.error("An error occurred while splitting: ", err);
             reject(err);
@@ -139,6 +143,7 @@ export const transcribeVideoAction = async (
             segment.endsWith(".wav") &&
             segment.includes(uid),
         );
+
       outputPaths.push(
         ...segments.map((segment) => path.join(outputDir, segment)),
       );
@@ -146,16 +151,19 @@ export const transcribeVideoAction = async (
       return outputPaths;
     };
 
-    const transcribeAudio = async (filePath: string): Promise<string> => {
-      const loader = new OpenAIWhisperAudio(filePath, {
-        clientOptions: {
-          apiKey: process.env.OPENAI_API_KEY,
-        },
+    const transcribeAudio = async (filePath: string): Promise<any> => {
+      const audioFile = fs.createReadStream(filePath);
+
+      const transcription = await openai.audio.transcriptions.create({
+        file: audioFile,
+        model: "whisper-1",
+        response_format: "verbose_json",
+        timestamp_granularities: ["segment"],
       });
 
-      const docs = await loader.load();
+      console.log(transcription);
 
-      return docs[0].pageContent;
+      return transcription;
     };
 
     const videoBuffer = await downloadYouTubeAudio(parseData.data.url);
@@ -169,17 +177,19 @@ export const transcribeVideoAction = async (
 
     const segmentPaths = await splitAndConvertWav(videoBuffer);
 
-    let fullTranscription = "";
-
     for (const segmentPath of segmentPaths) {
       const segmentTranscription = await transcribeAudio(segmentPath);
-      fullTranscription += segmentTranscription;
+
+      console.log(segmentTranscription);
 
       fs.unlinkSync(segmentPath);
     }
 
-    return { message: fullTranscription.trim() };
+    return { status: "success", message: "" };
   } catch (error) {
-    throw error;
+    return {
+      status: "error",
+      message: "An unexpected error occurred. Please try again.",
+    };
   }
 };
