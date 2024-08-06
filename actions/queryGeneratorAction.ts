@@ -4,13 +4,13 @@ import { ChatOpenAI } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
-import { RunnablePassthrough, RunnableSequence } from "@langchain/core/runnables";
-import { Document } from "@langchain/core/documents";
-import { getCookie, setCookie } from "cookies-next";
+import {
+  RunnablePassthrough,
+  RunnableSequence,
+} from "@langchain/core/runnables";
 import { cookies } from "next/headers";
 
 import { fileFormSchema } from "@/dtos";
-import { split } from "postcss/lib/list";
 
 interface queryGeneratorState {
   message: string;
@@ -21,7 +21,7 @@ interface queryGeneratorState {
 
 export const queryGeneratorAction = async (
   previousState: queryGeneratorState,
-  formData: FormData
+  formData: FormData,
 ): Promise<queryGeneratorState> => {
   const data = Object.fromEntries(formData);
   const mode = data.mode as "insert" | "query";
@@ -68,7 +68,7 @@ export const queryGeneratorAction = async (
       const query = data.query as string;
       const documentsCookies = cookies().getAll();
       const documents = documentsCookies.filter((document) =>
-        document.name.startsWith("document-")
+        document.name.startsWith("document-"),
       );
 
       if (documents.length === 0) {
@@ -79,7 +79,9 @@ export const queryGeneratorAction = async (
         };
       }
 
-      const parsedDocuments = documents.map((document) => JSON.parse(document.value));
+      const parsedDocuments = documents.map((document) =>
+        JSON.parse(document.value),
+      );
 
       const promptTemplate = ChatPromptTemplate.fromMessages([
         ["system", "You are an excellent database admin."],
@@ -92,8 +94,14 @@ export const queryGeneratorAction = async (
           "system",
           "Please also read the comments in the schema, if any, and use it to understand the schema better.",
         ],
-        ["system", "Always adjust your answer with the user's request, and the schema details."],
-        ["system", "You are going to answer people who ask about database query."],
+        [
+          "system",
+          "Always adjust your answer with the user's request, and the schema details.",
+        ],
+        [
+          "system",
+          "You are going to answer people who ask about database query.",
+        ],
         [
           "system",
           `For example, when people ask how to get all eSIM plans, you'd give answer like, "select * from esims"`,
