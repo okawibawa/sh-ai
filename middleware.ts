@@ -4,7 +4,7 @@ import { Redis } from "@upstash/redis";
 
 const rateLimit = new Ratelimit({
   redis: Redis.fromEnv(),
-  limiter: Ratelimit.fixedWindow(54, "3600s"),
+  limiter: Ratelimit.slidingWindow(50, "60s"),
   analytics: true,
 });
 

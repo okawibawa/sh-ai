@@ -8,11 +8,13 @@ export const StyledResponse = ({ response }: { response: string }) => {
       {parts.map((part, index) => {
         if (part.startsWith("```") && part.endsWith("```")) {
           const code = part.slice(3, -3).trim();
-          const language = code.split("\n")[0];
           const codeContent = code.split("\n").slice(1).join("\n");
 
           return (
-            <pre key={index} className="bg-gray-800 rounded-md p-4 overflow-x-auto">
+            <pre
+              key={index}
+              className="bg-gray-800 rounded-md p-4 overflow-x-auto text-left"
+            >
               <code className="text-sm text-gray-200">{codeContent}</code>
             </pre>
           );

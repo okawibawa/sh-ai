@@ -40,7 +40,7 @@ export const queryGeneratorAction = async (
 
   if (rateLimitExceeded === "true") {
     return {
-      message: "Rate limit exceeded. Please try again later.",
+      message: "Rate limit exceeded. Please try again in a few seconds.",
       status: "error",
       data: null,
       mode: "",

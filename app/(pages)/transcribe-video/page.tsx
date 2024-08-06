@@ -79,7 +79,14 @@ export default function VideoTranscriber() {
         </Form>
       </section>
 
-      {state.message && (
+      {state.status === "error" && (
+        <section className="space-y-2">
+          <h2 className="font-semibold">Error</h2>
+          <p className="text-red-500">{state.message}</p>
+        </section>
+      )}
+
+      {state.status === "success" && (
         <section className="space-y-2">
           <h2 className="font-semibold">Transcription</h2>
           <p>{state.message}</p>

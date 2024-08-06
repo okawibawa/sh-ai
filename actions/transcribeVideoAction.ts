@@ -10,6 +10,7 @@ import { nanoid } from "nanoid";
 import { Tool } from "@langchain/core/tools";
 
 import { urlFormSchema } from "@/dtos";
+import { headers } from "next/headers";
 
 interface transcribeVideoState {
   message: string;
@@ -34,6 +35,17 @@ export const transcribeVideoAction = async (
   previousState: transcribeVideoState,
   formData: FormData,
 ): Promise<transcribeVideoState> => {
+  const headersList = headers();
+  const rateLimitExceeded = headersList.get("X-RateLimit-Exceeded");
+
+  if (rateLimitExceeded === "true") {
+    return {
+      message: "Rate limit exceeded. Please try again in a few seconds.",
+      status: "error",
+      data: null,
+    };
+  }
+
   const data = Object.fromEntries(formData);
   const uid = nanoid(4);
   const parseData = urlFormSchema.safeParse(data);

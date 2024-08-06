@@ -5,6 +5,10 @@ export const metadata: Metadata = {
   title: "Video Transcriber",
 };
 
-export default function TranscribeVideoLayout({ children }: { children: ReactNode }) {
+export default function TranscribeVideoLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return <>{children}</>;
 }
