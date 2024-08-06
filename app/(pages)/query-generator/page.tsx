@@ -5,10 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useFormState } from "react-dom";
-import { deleteCookie } from "cookies-next";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { StyledResponse } from "@/components/styled-response";
 
@@ -16,13 +19,14 @@ import { queryGeneratorAction } from "@/actions";
 
 import { fileListFormSchema, queryFormSchema } from "@/dtos";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function QueryGenerator() {
   const [isSchemaRead, setIsSchemaRead] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>();
   const [isPending, startTransition] = useTransition();
   const [state, formAction] = useFormState(queryGeneratorAction, {
     message: "",
+    mode: "",
   });
 
   const fileForm = useForm<z.infer<typeof fileListFormSchema>>({
@@ -46,7 +50,6 @@ export default function QueryGenerator() {
     state.status = "";
     state.data = "";
     state.mode = "";
-    deleteCookie("document");
     setIsSchemaRead(false);
   };
 
@@ -58,7 +61,8 @@ export default function QueryGenerator() {
     <>
       <section className="space-y-2">
         <p className="text-sm">
-          Insert your SQL schema here. Must be <code className="bg-gray-200 rounded-sm">.sql</code>
+          Insert your SQL schema here. Must be{" "}
+          <code className="bg-gray-200 rounded-sm">.sql</code>
         </p>
 
         <div className={`flex ${isSchemaRead && "gap-2"}`}>
@@ -108,7 +112,11 @@ export default function QueryGenerator() {
           </Form>
 
           {isSchemaRead && (
-            <Button variant="destructive" onClick={handleRemoveSchema} disabled={isPending}>
+            <Button
+              variant="destructive"
+              onClick={handleRemoveSchema}
+              disabled={isPending}
+            >
               Resubmit Schema
             </Button>
           )}
@@ -117,7 +125,9 @@ export default function QueryGenerator() {
 
       {isSchemaRead && (
         <section className="space-y-2">
-          <p className="text-sm">Insert your query here. Make sure to make it clear enough.</p>
+          <p className="text-sm">
+            Insert your query here. Make sure to make it clear enough.
+          </p>
           <Form {...queryForm}>
             <form
               className="text-left flex gap-2"
@@ -143,9 +153,8 @@ export default function QueryGenerator() {
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormControl>
-                      <Input
+                      <Textarea
                         {...queryForm.register("query")}
-                        type="text"
                         placeholder="e.g. how do i query all users who purchased item x?"
                         disabled={isPending}
                       />

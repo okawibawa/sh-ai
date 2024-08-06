@@ -26,7 +26,7 @@ const CONTENT_TOO_LONG_ERRORS = [
   "Content is too long. I am not that powerful yet 😅 Less than 13 mins is preferable.",
   "Your content is way too long. What are you transcribing? Less than 13 mins is preferable.",
   "Alright calm down now. Whatever that is you put in is too long. Less than 13 mins is preferable.",
-  "Your content is too long I'm not reading all that. Less than 13 mins is preferable.",
+  "Your content is too long I'm not transcribing all that. Less than 13 mins is preferable.",
   "Your content is too long I'm tired. Less than 13 mins is preferable.",
 ];
 

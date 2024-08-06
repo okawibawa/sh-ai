@@ -1,6 +1,6 @@
 "use server";
 
-import { ChatOpenAI } from "@langchain/openai";
+import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
@@ -8,7 +8,8 @@ import {
   RunnablePassthrough,
   RunnableSequence,
 } from "@langchain/core/runnables";
-import { cookies } from "next/headers";
+import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
+import { createClient } from "@supabase/supabase-js";
 
 import { fileFormSchema } from "@/dtos";
 
@@ -18,6 +19,16 @@ interface queryGeneratorState {
   data?: any;
   mode?: "insert" | "query" | "";
 }
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+);
+
+const embedding = new OpenAIEmbeddings({
+  openAIApiKey: process.env.OPENAI_API_KEY,
+  model: "text-embedding-ada-002",
+});
 
 export const queryGeneratorAction = async (
   previousState: queryGeneratorState,
@@ -53,8 +64,10 @@ export const queryGeneratorAction = async (
 
       const documents = await splitCharacter(schema);
 
-      documents.forEach((document, index) => {
-        cookies().set(`document-${index}`, JSON.stringify(document));
+      await SupabaseVectorStore.fromDocuments(documents, embedding, {
+        client: supabase,
+        tableName: "documents",
+        queryName: "match_documents",
       });
 
       return {
@@ -66,26 +79,29 @@ export const queryGeneratorAction = async (
 
     if (mode === "query") {
       const query = data.query as string;
-      const documentsCookies = cookies().getAll();
-      const documents = documentsCookies.filter((document) =>
-        document.name.startsWith("document-"),
+
+      const vectorStore = new SupabaseVectorStore(embedding, {
+        client: supabase,
+        tableName: "documents",
+        queryName: "match_documents",
+      });
+
+      const relevantDocuments = await vectorStore.similaritySearchWithScore(
+        query,
+        3,
       );
 
-      if (documents.length === 0) {
-        return {
-          status: "error",
-          message:
-            "We are having technical issues processing your schema. Please re-submit your schema or try again later.",
-        };
+      if (relevantDocuments.length === 0) {
+        return { status: "error", message: "No relevant documents found." };
       }
 
-      const parsedDocuments = documents.map((document) =>
-        JSON.parse(document.value),
-      );
+      const context = relevantDocuments
+        .map(([document, _]) => document.pageContent)
+        .join("\n");
 
       const promptTemplate = ChatPromptTemplate.fromMessages([
         ["system", "You are an excellent database admin."],
-        ["system", "You are gifted with these sacred SQL schema: {schema}"],
+        ["system", "You are gifted with these sacred SQL schema: {context}"],
         [
           "system",
           "Please pay attention to details of the schema; the relations, the columns name, data type, etc.",
@@ -124,10 +140,7 @@ export const queryGeneratorAction = async (
 
       const chain = RunnableSequence.from([
         {
-          schema: async () =>
-            parsedDocuments
-              .map((document: { pageContent: string }) => document.pageContent)
-              .join("\n"),
+          context: async () => context,
           question: new RunnablePassthrough(),
         },
         promptTemplate,
